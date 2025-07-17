@@ -3,10 +3,21 @@ from firebase_admin import credentials, auth
 from fastapi import HTTPException, status
 from typing import Optional
 import os
+import base64
 
-# Initialize Firebase Admin SDK
-cred = credentials.Certificate(os.getenv("FIREBASE_SERVICE_ACCOUNT", "serviceAccountKey.json"))
-firebase_admin.initialize_app(cred)
+# Initialize Firebase Admin SDK with support for base64 env var (for Render)
+firebase_app = None
+base64_key = os.getenv("FIREBASE_SERVICE_ACCOUNT_BASE64")
+if base64_key:
+    # Decode the base64 string and load credentials from dict
+    import json
+    key_json = base64.b64decode(base64_key).decode("utf-8")
+    cred = credentials.Certificate(json.loads(key_json))
+    firebase_app = firebase_admin.initialize_app(cred)
+else:
+    # Fallback to file for local development
+    cred = credentials.Certificate(os.getenv("FIREBASE_SERVICE_ACCOUNT", "serviceAccountKey.json"))
+    firebase_app = firebase_admin.initialize_app(cred)
 
 
 def verify_token(id_token: str) -> Optional[dict]:
