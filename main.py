@@ -14,10 +14,13 @@ db = firestore.client()
 # --- ADD/UPDATE THIS CORS CONFIGURATION ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Allow your React frontend's origin (Vite default)
+    allow_origins=[
+        "http://localhost:5173",  # Local Vite dev server
+        "https://reactfastapi-pi.vercel.app"  # Your deployed frontend
+    ],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],  # Explicitly allow all methods
-    allow_headers=["*", "id-token"],  # Explicitly allow all headers, and specifically "id-token"
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*", "id-token"],  # Allow all headers, including custom ones
 )
 # --- END CORS CONFIGURATION ---
 
